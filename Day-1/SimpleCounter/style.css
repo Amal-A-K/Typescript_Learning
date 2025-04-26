@@ -1,0 +1,44 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 30px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+#counter{
+    font-size: 2em;
+    font-weight: 600;
+    /* color: aliceblue; */
+    color: rgb(87, 133, 242);
+}
+h1{
+    color:rgb(69, 89, 106)
+}
+button{
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-radius: 5px;
+    border: 1px solid rgb(153, 153, 244);
+    color: rgb(87, 133, 242);
+    background-color: aliceblue;
+    cursor: pointer;
+}
+button:hover{
+    background-color: rgb(230, 242, 253);
+    border: 2px solid rgb(153, 153, 244) ;
+}
+
+@media(max-width:376px){
+    button{
+        font-size: 1rem;
+    }
+}
+@media(max-width:376px){
+    button{
+        font-size: .8rem;
+    }
+}

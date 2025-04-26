@@ -1,0 +1,57 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    border: 1px solid #a4a3a3;
+    border-radius: 5px;
+    gap: 20px;
+}
+.form-group{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    width: 100%;
+    max-width: 300px;
+}
+label{
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+input[type="text"],
+input[type="email"],
+textarea{
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 1em;
+}
+textarea{
+    resize: vertical;
+    min-height: 100px;
+}
+.form-control.error input,
+.form-control.error textarea {
+    border-color: #ff0000;
+}
+
+.error-message {
+    color: #ff0000;
+    font-size: 0.8em;
+    display: block;
+    margin-top: 5px;
+}
+button[type="submit"]{
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 550;
+}
+button[type="submit"]:hover{
+    background-color: #66a1e1;
+    border: 1px solid blue;
+}
