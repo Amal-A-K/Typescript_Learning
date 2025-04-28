@@ -1,13 +1,14 @@
+"use strict";
 (function () {
-    var feedbackForm = document.getElementById('feedbackForm');
-    var nameInput = document.getElementById('name');
-    var emailInput = document.getElementById('email');
-    var messageInput = document.getElementById('message');
-    var outputDiv = document.getElementById('output');
+    const feedbackForm = document.getElementById('feedbackForm');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const messageInput = document.getElementById('message');
+    const outputDiv = document.getElementById('output');
     // Helper function to show error messages
     function showError(input, message) {
-        var formControl = input.parentElement;
-        var errorElement = formControl === null || formControl === void 0 ? void 0 : formControl.querySelector('.error-message');
+        const formControl = input.parentElement;
+        const errorElement = formControl === null || formControl === void 0 ? void 0 : formControl.querySelector('.error-message');
         if (errorElement) {
             errorElement.textContent = message;
             formControl === null || formControl === void 0 ? void 0 : formControl.classList.add('error');
@@ -15,8 +16,8 @@
     }
     // Helper function to clear error messages
     function clearError(input) {
-        var formControl = input.parentElement;
-        var errorElement = formControl === null || formControl === void 0 ? void 0 : formControl.querySelector('.error-message');
+        const formControl = input.parentElement;
+        const errorElement = formControl === null || formControl === void 0 ? void 0 : formControl.querySelector('.error-message');
         if (errorElement) {
             errorElement.textContent = '';
             formControl === null || formControl === void 0 ? void 0 : formControl.classList.remove('error');
@@ -32,7 +33,7 @@
         return true;
     }
     function validateEmail(email) {
-        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email.trim()) {
             showError(emailInput, 'Email is required');
             return false;
@@ -57,32 +58,32 @@
         return true;
     }
     if (feedbackForm && nameInput && emailInput && messageInput && outputDiv) {
-        feedbackForm.addEventListener('submit', function (event) {
+        feedbackForm.addEventListener('submit', (event) => {
             event.preventDefault();
-            var nameValue = nameInput.value;
-            var emailValue = emailInput.value;
-            var messageValue = messageInput.value;
+            const nameValue = nameInput.value;
+            const emailValue = emailInput.value;
+            const messageValue = messageInput.value;
             // Validate all fields
-            var isNameValid = validateName(nameValue);
-            var isEmailValid = validateEmail(emailValue);
-            var isMessageValid = validateMessage(messageValue);
+            const isNameValid = validateName(nameValue);
+            const isEmailValid = validateEmail(emailValue);
+            const isMessageValid = validateMessage(messageValue);
             if (isNameValid && isEmailValid && isMessageValid) {
                 console.log("Name: ", nameValue);
                 console.log("Email: ", emailValue);
                 console.log("Message: ", messageValue);
-                outputDiv.textContent = "Thank you for your feedback, ".concat(nameValue, "!");
+                outputDiv.textContent = `Thank you for your feedback, ${nameValue}!`;
                 outputDiv.style.color = 'green';
                 feedbackForm.reset();
             }
         });
         // Add input event listeners for real-time validation
-        nameInput.addEventListener('input', function () {
+        nameInput.addEventListener('input', () => {
             validateName(nameInput.value);
         });
-        emailInput.addEventListener('input', function () {
+        emailInput.addEventListener('input', () => {
             validateEmail(emailInput.value);
         });
-        messageInput.addEventListener('input', function () {
+        messageInput.addEventListener('input', () => {
             validateMessage(messageInput.value);
         });
     }

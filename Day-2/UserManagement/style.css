@@ -1,0 +1,56 @@
+.container{
+    display:flex;
+    flex-direction:column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #2222;
+    border-radius: 5px;
+}
+#userForm{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+}
+.form-group{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
+    margin: 10px 0;
+}
+label{
+    font-size:16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+input[type="text"]{
+    outline-color: blue;
+    border-radius: 5px;
+    width: 200px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: 1px solid blue;
+}
+select{
+    outline-color: blue;
+    border-radius:5px;
+    width: 250px;
+    padding: 10px 20px;
+}
+button{
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    width: 250px;
+    padding: 10px 20px;
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button:hover{
+    background-color: rgb(66, 66, 231);
+}
