@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management-2</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div id="error-message" class="error-message"></div>
+    <div class="container-1">
+        <div class="heading">
+            <h1>USER MANAGEMENT</h1>
+        </div>
+        <form id="userForm">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input id="name" type="text" name="name"/>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input id="email" type="text" name="email"/>
+            </div>
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input id="age" type="number" name="age"/>
+            </div>
+            <div class="form-group">
+                <label for="role">Role</label>
+                <select id="role" name="role">
+                    <option value="">Select a role</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit">ADD USER</button>
+            </div>
+        </form>
+    </div>
+    <div class="container-2">
+        <div id="userOutput" class="output"></div>
+    </div>
+    <script src="./script.js"></script>
+</body>
+</html>
