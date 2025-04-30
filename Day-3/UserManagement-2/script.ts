@@ -107,11 +107,8 @@ function renderUsers(){
     )
     .join("");
 }
+
 //  Error display
-// function showError(message: string) {
-//     outputDiv.innerHTML = `<div class="error">${message}</div>`;
-//     setTimeout(() => outputDiv.innerHTML = '', 3000);
-//   }
   function showError(message: string) {
     errorDiv.textContent = message;
     errorDiv.style.display = 'block';

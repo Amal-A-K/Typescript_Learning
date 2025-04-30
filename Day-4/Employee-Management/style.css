@@ -1,0 +1,89 @@
+body {
+    font-family: sans-serif;
+    background: #f4f4f4;
+  }
+  
+  .container {
+    width: 500px;
+    margin: 50px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    /* box-shadow: 0 0 10px #aaa; */
+    box-shadow: 0 0 10px #b9b6ed;
+  }
+  h2{
+    font-size: 2em;
+    color: #0056b3;
+    text-align: center;
+  }
+  
+  /* input{
+    width: 100%;
+  }
+ */
+ .input{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+ }
+  input,button{
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    align-items: center;
+    border-radius: 5px;
+  }
+  input{
+    border-color: #b0b6bb;
+    outline-color: #007bff;
+  }
+  .btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .edit-delete-btn{
+    display: flex;
+    justify-content: space-around;
+  }
+  button {
+    width: 200px;
+    font-size: 16px;
+    font-weight: 600;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background: #0056b3;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  li {
+    border-radius: 5px;
+    padding: 10px;
+    background: #eee;
+    margin-bottom: 10px;
+  }
+  
+  .error {
+    color: red;
+  }
+  .details-card{
+    align-items: left;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+  .p{
+    color: rgb(92, 67, 67);
+  }
+  

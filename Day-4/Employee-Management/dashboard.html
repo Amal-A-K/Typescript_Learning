@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Employee Dashboard</h2>
+      <form id="employee-form">
+        <div class="input">
+          <input type="text" id="emp-name" placeholder="Name" required />
+          <input type="number" id="emp-age" placeholder="Age" required />
+          <input type="number" id="emp-salary" placeholder="Salary" required />
+          <div class="btn"><button type="submit">Add Employee</button></div>
+        </div>
+
+        
+      </form>
+      <ul id="employee-list"></ul>
+    </div>
+    <script src="./dist/main.js" type="module"></script>
+  </body>
+</html>
