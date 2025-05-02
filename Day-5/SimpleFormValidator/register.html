@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Registeration</h2>
+    <input id="regName" placeholder="Username" />
+    <input id="regPassword" type="password" placeholder="Password" />
+    <select id="regRole">
+      <option value="viewer">Viewer</option>
+      <option value="editor">Editor</option>
+      <option value="admin">Admin</option>
+    </select>
+    <button id="btn">Register</button>
+    <p id="regError"></p>
+    <p>Already have an account? <a href="index.html">Login</a></p>
+  </div>
+
+  <script type="module" src="./dist/register.js" >
+    // function register() {
+    //   const name = document.getElementById("regName").value.trim();
+    //   const password = document.getElementById("regPassword").value;
+    //   const role = document.getElementById("regRole").value;
+    //   const error = document.getElementById("regError");
+
+    //   if (!name || !password) {
+    //     error.textContent = "All fields are required.";
+    //     return;
+    //   }
+
+    //   const users = JSON.parse(localStorage.getItem("users") || "[]");
+    //   if (users.some(u => u.name === name)) {
+    //     error.textContent = "User already exists.";
+    //     return;
+    //   }
+
+    //   const user = {
+    //     name,
+    //     age: 25,
+    //     password,
+    //     role,
+    //     canEdit: role !== "viewer",
+    //     canDelete: role === "admin"
+    //   };
+
+    //   users.push(user);
+    //   localStorage.setItem("users", JSON.stringify(users));
+    //   alert("Registered successfully!");
+    //   window.location.href = "index.html";
+    // }
+  </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Login</h2>
+      <input id="loginInput" placeholder="Username" />
+      <input id="passwordInput" type="password" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <p id="loginError"></p>
+      <p>New user? <a href="register.html">Register here</a></p>
+    </div>
+    <script src="./dist/script.js" type="module"></script>
+    <!-- <script>
+      function login() {
+        const username = document.getElementById("loginInput").value.trim();
+        const password = document.getElementById("passwordInput").value;
+        const error = document.getElementById("loginError");
+
+        if (!username || !password) {
+          error.textContent = "All fields required.";
+          return;
+        }
+
+        const users = JSON.parse(localStorage.getItem("users") || "[]");
+        const user = users.find(
+          (u) => u.name === username && u.password === password
+        );
+
+        if (user) {
+          localStorage.setItem("user", JSON.stringify(user));
+          window.location.href = "dashboard.html";
+        } else {
+          error.textContent = "Invalid username or password.";
+        }
+      }
+    </script> -->
+  </body>
+</html>

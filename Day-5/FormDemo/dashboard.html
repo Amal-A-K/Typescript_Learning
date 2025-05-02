@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - TypeScript Auth Demo</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Dashboard</h1>
+        <div id="userInfo"></div>
+        <div class="admin-edit-container">
+            <div id="adminPanel" class="hidden">
+                <h2>Admin Controls</h2>
+                <button id="manageUsers">Manage Users</button>
+            </div>
+            <div id="editorPanel" class="hidden">
+                <h2>Editor Controls</h2>
+                <button id="editContent">Edit Content</button>
+            </div>
+            <div class="logoutbtn"><button id="logout">Logout</button></div>
+            
+        </div>
+        
+    </div>
+    <script src="auth.js"></script>
+</body>
+</html>
