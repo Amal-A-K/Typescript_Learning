@@ -1,0 +1,270 @@
+/* ==========================================
+   General Styles & Reset
+   ========================================== */
+
+   * {
+    box-sizing: border-box; /* More intuitive sizing */
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #f4f7f6; /* Slightly softer background */
+    color: #333;
+    line-height: 1.6; /* Improve readability */
+    display: flex; /* Helps with centering */
+    flex-direction: column; /* Stack body elements vertically */
+    align-items: center; /* Center content horizontally */
+    min-height: 100vh;
+  }
+  
+  /* Container for main content - Optional, but helps center and limit width */
+  /* Add <div class="container"> around main content in your HTML if you use this */
+  
+  .container {
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+ 
+  
+  /* If not using .container, apply max-width directly to relevant sections or body */
+  
+  /* ==========================================
+     Typography
+     ========================================== */
+  
+  h1 {
+    color: #2c3e50; /* Darker blue-grey */
+    margin-bottom: 25px;
+    text-align: center;
+  }
+  
+  p {
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  a {
+    color: #3498db; /* Nice blue */
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+    color: #2980b9; /* Darker blue on hover */
+  }
+  
+  /* ==========================================
+     Navigation
+     ========================================== */
+  
+  nav {
+    width: 100%;
+    max-width: 800px; /* Match content width if needed */
+    text-align: center;
+    padding: 10px 0;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  nav a {
+    margin: 0 10px; /* Even spacing */
+    text-decoration: none;
+    color: #3498db;
+    font-weight: bold;
+  }
+  
+  nav a:hover {
+    color: #2980b9;
+    text-decoration: none; /* Keep nav links without underline on hover */
+  }
+  
+  /* Style for buttons used within nav */
+  .nav-button {
+      background: none;
+      border: none;
+      color: #e74c3c; /* Reddish for logout */
+      cursor: pointer;
+      font-size: inherit; /* Match link font size */
+      font-weight: bold;
+      margin: 0 10px;
+      padding: 0; /* Remove default button padding */
+      transition: color 0.2s ease-in-out;
+  }
+  
+  .nav-button:hover {
+      color: #c0392b; /* Darker red on hover */
+  }
+  
+  
+  /* ==========================================
+     Forms (Login/Signup)
+     ========================================== */
+  
+  form {
+      width: 100%;
+      max-width: 400px; /* Limit form width */
+      margin: 20px auto; /* Center form */
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-align: center; /* Center button below inputs */
+  }
+  
+  /* Style labels */
+  label {
+    display: block; /* Place label above input */
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-align: left; /* Align label text left */
+    color: #555;
+  }
+  
+  input[type="text"],
+  input[type="password"] {
+    width: 100%; /* Full width within form */
+    padding: 10px;
+    margin-bottom: 15px; /* Space below each input */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  /* Buttons (can be inside or outside form for this example) */
+  /* General Button Styling */
+  button, .button /* Add class="button" if needed */ {
+    display: inline-block; /* Allows margin auto for centering if needed */
+    padding: 10px 20px;
+    margin: 10px 5px; /* Margin top/bottom and left/right */
+    border: none;
+    border-radius: 4px;
+    background-color: #3498db; /* Primary blue */
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+  }
+  
+  button:hover, .button:hover {
+    background-color: #2980b9; /* Darker blue */
+  }
+  
+  button:active, .button:active {
+    transform: scale(0.98); /* Slight press effect */
+  }
+  
+  /* Specific button IDs if needed, but class-based is often better */
+  #signup-btn, #login-btn {
+      /* Additional styles if needed */
+      min-width: 120px; /* Ensure minimum width */
+  }
+  
+  
+  /* ==========================================
+     Shop & Cart Lists
+     ========================================== */
+  
+  #shop-list,
+  #cart-list {
+    width: 100%;
+    max-width: 800px; /* Adjust as needed */
+    margin-top: 20px;
+  }
+  
+  .book-item,
+  .cart-item {
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-between; /* Space out details and button */
+    align-items: center; /* Vertically align items */
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+  }
+  
+  .book-details {
+      flex-grow: 1; /* Allow details to take up available space */
+      margin-right: 10px; /* Space before button */
+  }
+  
+  .cart-item {
+      justify-content: flex-start; /* Cart items don't need space-between */
+  }
+  
+  /* Style the "Add to Cart" button specifically */
+  .add-button {
+      padding: 5px 10px; /* Smaller padding */
+      font-size: 0.9rem;
+      background-color: #2ecc71; /* Green */
+      min-width: auto; /* Override general button width */
+  }
+  
+  .add-button:hover {
+      background-color: #27ae60; /* Darker green */
+  }
+  
+  /* Cart Total Styling */
+  .cart-total {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 2px solid #eee;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: right; /* Align total to the right */
+      color: #2c3e50;
+  }
+  
+  
+  /* ==========================================
+     Message Area Styling
+     ========================================== */
+  
+  .message-area {
+    width: 100%;
+    max-width: 400px; /* Match form width or adjust as needed */
+    padding: 12px 15px;
+    margin: 15px auto; /* Center it */
+    border-radius: 4px;
+    display: none; /* Initially hidden - JS will change this */
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid transparent; /* Base border */
+  }
+  
+  .message-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+  }
+  
+  .message-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+  }
+  
+  .message-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
+  }
+  
+  .message-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-color: #ffeeba;
+  }

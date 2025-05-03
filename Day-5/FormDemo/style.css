@@ -99,7 +99,7 @@ button:hover {
 }
 
 textarea {
-    width: 100%;
+    width: 96%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -107,7 +107,9 @@ textarea {
     min-height: 200px;
     margin-bottom: 15px;
 }
-
+/* #contentEditor{
+    margin-right: 15px;
+} */
 .add-user {
     margin-top: 20px;
     padding: 15px;
