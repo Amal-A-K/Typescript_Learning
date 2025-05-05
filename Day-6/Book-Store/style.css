@@ -20,8 +20,8 @@
     min-height: 100vh;
   }
   
-  /* Container for main content - Optional, but helps center and limit width */
-  /* Add <div class="container"> around main content in your HTML if you use this */
+  /* Container for main content  */
+  
   
   .container {
     width: 100%;
@@ -32,9 +32,6 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     border-radius: 8px;
   }
- 
-  
-  /* If not using .container, apply max-width directly to relevant sections or body */
   
   /* ==========================================
      Typography

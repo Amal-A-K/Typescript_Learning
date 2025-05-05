@@ -4,7 +4,6 @@
 
 interface User {
   username: string;
-  // !!! SECURITY WARNING: Storing plain text passwords is EXTREMELY insecure.
   password: string;
 }
 
@@ -60,7 +59,7 @@ bookStore.add({ id: 6, title: "Java: A Beginner's Guide", author: "Herbert Schil
 
 const USERS_STORAGE_KEY = "users";
 const LOGGED_IN_USER_STORAGE_KEY = "loggedInUser";
-const CART_STORAGE_KEY = "cart"; // Changed: Base cart key
+const CART_STORAGE_KEY = "cart"; 
 
 // --- User Storage ---
 function saveUsers(users: User[]): void {
