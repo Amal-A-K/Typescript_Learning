@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
+import { UserData } from '../types/user';
 import Button from './ui/Button'; // Import the Button component
 import Input from './ui/Input';   // Import the Input component
 import Label from './ui/Label';   // Import the Label component
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from './ui/Card'; // Import Card components
 import { Loader2 } from 'lucide-react';
 
-// Define the type for user data
-interface UserData {
-    id: string;
-    name: string;
-    email: string;
-}
+
 
 // Define the type for the form
 type FormType = 'login' | 'signup';

@@ -1,13 +1,10 @@
 import React from 'react';
+import { UserData } from '../types/user';
 import Button from './ui/Button';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from './ui/Card';
 import { LogOut, User } from 'lucide-react';
 
-interface UserData {
-    id: string;
-    name: string;
-    email: string;
-}
+
 
 const Dashboard: React.FC<{ user: UserData; onLogout: () => void }> = ({ user, onLogout }) => {
 
