@@ -37,7 +37,7 @@ const OtpVerification: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-purple-500 to-purple-300 px-4">
       <form onSubmit={handleVerify} className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-semibold mb-4 text-center">OTP Verification</h2>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
