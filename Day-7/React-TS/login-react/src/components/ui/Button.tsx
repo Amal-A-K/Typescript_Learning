@@ -17,7 +17,7 @@ const Button: React.FC<ButtonProps> = ({
     ...props
 }) => {
     const baseClasses = clsx(
-        'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+        'inline-flex items-center justify-center rounded-md text-sm font-medium  transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
         props.disabled && 'opacity-50 cursor-not-allowed',
         {
             'bg-primary text-primary-foreground hover:bg-primary/90': variant === 'default',

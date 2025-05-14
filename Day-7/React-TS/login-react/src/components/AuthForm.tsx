@@ -133,7 +133,7 @@ const AuthForm: React.FC<{ onAuth: (user: UserData) => void }> = ({ onAuth }) =>
                             Don't have an account?{' '}
                             <button
                                 onClick={() => setFormType('signup')}
-                                className="text-blue-500 hover:underline"
+                                className="text-blue-500 hover:underline "
                                 disabled={loading}
                             >
                                 Sign Up
