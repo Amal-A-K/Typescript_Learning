@@ -22,8 +22,13 @@ app.use((req, res, next) => {
 });
 
 // Connect to DB and then start server
-connectDB().then(() => {
-    app.listen(process.env.PORT, () => {
-        console.log(`Server running on port ${process.env.PORT}`);
+connectDB()
+    .then(() => {
+        app.listen(process.env.PORT, () => {
+            console.log(`Server running on port ${process.env.PORT}`);
+        });
+    })
+    .catch(error => {
+        console.error("Failed to connect to the database. Server not started.", error);
+        process.exit(1); // Exit the process with a failure code
     });
-});

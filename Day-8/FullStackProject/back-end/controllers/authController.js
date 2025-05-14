@@ -2,17 +2,16 @@ import axios from 'axios';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-// import dotenv from 'dotenv';
 
 // const OTP_API = process.env.TWO_FACTOR_API_KEY;
 // const JWT_SECRET = process.env.JWT_SECRET;
 
 export const sendOTP = async (req, res) => {
-    const OTP_API = process.env.TWO_FACTOR_API_KEY;
+  const OTP_API = process.env.TWO_FACTOR_API_KEY;
   const { phoneNumber } = req.body;
   try {
     const response = await axios.get(
-     `https://2factor.in/API/V1/${OTP_API}/SMS/+91${phoneNumber}/AUTOGEN`
+     `https://2factor.in/API/V1/${OTP_API}/SMS/+91${phoneNumber}/AUTOGEN?method=sms`
     );
     res.status(200).json({ sessionId: response.data.Details });
   } catch (err) {
@@ -25,7 +24,7 @@ export const sendOTP = async (req, res) => {
 };
 
 export const verifyOTP = async (req, res) => {
-    const OTP_API = process.env.TWO_FACTOR_API_KEY;
+  const OTP_API = process.env.TWO_FACTOR_API_KEY;
   const { sessionId, otp, fullName, phoneNumber, password, confirmPassword } = req.body;
 
   if (!fullName || !phoneNumber || !password || !confirmPassword || !sessionId || !otp) {
@@ -72,9 +71,14 @@ export const loginUser = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
-
+    
+    const payload = {
+      userId: user._id,
+      phoneNumber: user.phoneNumber
+    };
+    
     const token = jwt.sign(
-      { userId: user._id, phoneNumber: user.phoneNumber },
+      payload,
       JWT_SECRET,
       { expiresIn: '1h' }
     );

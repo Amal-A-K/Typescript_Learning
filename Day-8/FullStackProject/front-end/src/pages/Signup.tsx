@@ -1,7 +1,5 @@
-// src/pages/Signup.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import axios from '../utils/axios';
 import api from '../services/api';
 
 const Signup: React.FC = () => {
@@ -33,6 +31,9 @@ const Signup: React.FC = () => {
       setError('Passwords do not match');
       return;
     }
+
+    // Clear any previous errors
+    setError('');
 
     try {
     //   const res = await axios.post('/auth/send-otp', { phoneNumber });

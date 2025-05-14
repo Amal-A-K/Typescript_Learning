@@ -1,7 +1,5 @@
-// src/pages/Login.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import axios from '../utils/axios';
 import api from '../services/api';
 
 const Login: React.FC = () => {

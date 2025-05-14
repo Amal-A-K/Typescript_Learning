@@ -1,13 +1,10 @@
-// src/pages/Dashboard.tsx
 import React, { useEffect, useState } from 'react';
-// import axios from '../utils/axios';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 interface User {
   fullName: string;
   phoneNumber: string;
-  // email:string;
 }
 
 const Dashboard: React.FC = () => {
