@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { Container, Nav, Navbar, Stack } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import Notification from "./chat/Notification";
+import Notification from "./chat/NotificationComponent";
 
 interface User {
   name: string;

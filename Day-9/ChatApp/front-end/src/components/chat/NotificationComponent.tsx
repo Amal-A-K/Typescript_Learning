@@ -23,7 +23,7 @@ interface ModifiedNotification extends Notification {
   senderName?: string;
 }
 
-const Notification = () => {
+const NotificationComponent = () => {
   const [isOpen, setIsOpen] = useState<boolean | null>(null);
   const { user } = useAuth();
   // const user: User | null = authUser;
@@ -123,4 +123,4 @@ const Notification = () => {
   );
 };
 
-export default Notification;
+export default NotificationComponent;

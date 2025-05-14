@@ -88,19 +88,49 @@ export const ChatContextProvider = ({ children, user }: ChatProviderProps) => {
   const [messages, setMessages] = useState<Message[] | null>(null);
   const [isMessagesLoading, setIsMessagesLoading] = useState(false);
   const [messagesError, setMessagesError] = useState<ErrorResponse | null>(null);
-  const [sendTextMessageError, setSendTextMessageError] = useState<ErrorResponse | null>(null);
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const [sendTextMessageError, setSendTextMessageError] = useState<ErrorResponse | null>(null);  const [socket, setSocket] = useState<Socket | null>(null);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [newMessage, setNewMessage] = useState<Message | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [allUsers, setAllUsers] = useState<User[]>([]);
 
+  // Define types for socket event handlers
+  type OnlineUsersResponse = string[];
+  type MessageResponse = Message;
+  type NotificationResponse = Notification;
   // Initialize socket
   useEffect(() => {
-    const newSocket = io("http://localhost:3000");
+    if (!user?._id) return; 
+
+    const newSocket = io("http://localhost:3002", {
+      withCredentials: true,
+      transports: ['websocket'] as ('websocket' | 'polling')[],
+      path: "/socket.io/",
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 60000,
+      autoConnect: true,
+      forceNew: true
+    });
+
+    newSocket.on('connect', () => {
+      console.log('Socket connected successfully:', newSocket.id);
+    });    newSocket.on('connect_error', (error: Error) => {
+      console.error('Socket connection error:', error.message);
+    });
+
+    newSocket.on('disconnect', (reason: string) => {
+      console.log('Socket disconnected:', reason);
+    });
+
     setSocket(newSocket);
+
     return () => {
-      newSocket.disconnect();
+      if (newSocket) {
+        newSocket.disconnect();
+      }
     };
   }, [user]);
 
@@ -108,8 +138,7 @@ export const ChatContextProvider = ({ children, user }: ChatProviderProps) => {
   useEffect(() => {
     if (socket === null || !user?._id) return;
     
-    socket.emit("addNewUser", user._id);
-    socket.on("getOnlineUsers", (res: string[]) => {
+    socket.emit("addNewUser", user._id);    socket.on("getOnlineUsers", (res: OnlineUsersResponse) => {
       setOnlineUsers(res);
     });
 
@@ -130,14 +159,12 @@ export const ChatContextProvider = ({ children, user }: ChatProviderProps) => {
 
   // Receive message & notification
   useEffect(() => {
-    if (socket === null) return;
-
-    socket.on("getMessage", (res: Message) => {
+    if (socket === null) return;    socket.on("getMessage", (res: MessageResponse) => {
       if (currentChat?._id !== res.chatId) return;
       setMessages((prev) => (prev ? [...prev, res] : [res]));
     });
 
-    socket.on("getNotification", (res: Notification) => {
+    socket.on("getNotification", (res: NotificationResponse) => {
       if (!currentChat) {
         setNotifications((prev) => [res, ...prev]);
         return;

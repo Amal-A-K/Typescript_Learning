@@ -1,4 +1,4 @@
-import chatModel from "../Models/chatModel.js";
+import chatModel from "../models/chatModel.js";
 //APIs
 // createChat
 // findUserChats

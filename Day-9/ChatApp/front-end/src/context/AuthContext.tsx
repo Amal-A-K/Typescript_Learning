@@ -31,7 +31,7 @@ export interface LoginInfo {
 export interface AuthContextType {
   user: User | null;
   registerInfo: RegisterInfo;
-  updateRegisterInfo: (info: RegisterInfo) => void;
+  updateRegisterInfo: (info: Partial<RegisterInfo>) => void;
   registerUser: (e: React.FormEvent) => Promise<void>;
   registerError: ErrorResponse | null;
   isRegisterLoading: boolean;
@@ -39,7 +39,7 @@ export interface AuthContextType {
   loginUser: (e: React.FormEvent) => Promise<void>;
   loginError: ErrorResponse | null;
   isLoginLoading: boolean;
-  updateLoginInfo: (info: LoginInfo) => void;
+  updateLoginInfo: (info: Partial<LoginInfo>) => void;
   loginInfo: LoginInfo;
 }
 
@@ -71,14 +71,16 @@ export const AuthContextProvider = ({ children }: AuthProviderProps) => {
         if (user) {
             setUser(JSON.parse(user));
         }
-    }, []);
-
-    const updateRegisterInfo = useCallback((info: RegisterInfo) => {
-        setRegisterInfo(info);
-    }, []);
-
-    const updateLoginInfo = useCallback((info: LoginInfo) => {
-        setLoginInfo(info);
+    }, []);    const updateRegisterInfo = useCallback((info: Partial<RegisterInfo>) => {
+        setRegisterInfo(prev => ({
+            ...prev,
+            ...info
+        }));
+    }, []);    const updateLoginInfo = useCallback((info: Partial<LoginInfo>) => {
+        setLoginInfo(prev => ({
+            ...prev,
+            ...info
+        }));
     }, []);
 
     const registerUser = useCallback(async (e: React.FormEvent) => {
@@ -95,15 +97,24 @@ export const AuthContextProvider = ({ children }: AuthProviderProps) => {
             
             setIsRegisterLoading(false);
             
-            if ('error' in response && response.error) {
-                return setRegisterError(response as ErrorResponse);
+            if ('error' in response) {
+                setRegisterError({
+                    error: true,
+                    message: typeof response.message === 'string' 
+                        ? response.message 
+                        : 'Registration failed'
+                });
+                return;
             }
             
             localStorage.setItem("User", JSON.stringify(response));
             setUser(response as User);
         } catch (error) {
             setIsRegisterLoading(false);
-            setRegisterError({ error: true, message: "An unexpected error occurred" });
+            setRegisterError({ 
+                error: true, 
+                message: error instanceof Error ? error.message : "An unexpected error occurred" 
+            });
         }
     }, [registerInfo]);
 
@@ -121,15 +132,24 @@ export const AuthContextProvider = ({ children }: AuthProviderProps) => {
             
             setIsLoginLoading(false);
             
-            if ('error' in response && response.error) {
-                return setLoginError(response as ErrorResponse);
+            if ('error' in response) {
+                setLoginError({
+                    error: true,
+                    message: typeof response.message === 'string' 
+                        ? response.message 
+                        : 'Login failed'
+                });
+                return;
             }
             
             localStorage.setItem("User", JSON.stringify(response));
             setUser(response as User);
         } catch (error) {
             setIsLoginLoading(false);
-            setLoginError({ error: true, message: "An unexpected error occurred" });
+            setLoginError({ 
+                error: true, 
+                message: error instanceof Error ? error.message : "An unexpected error occurred" 
+            });
         }
     }, [loginInfo]);
 

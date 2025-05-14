@@ -62,12 +62,14 @@ const findUser = async(req, res) =>{
 
 const getUsers = async(req, res) =>{
     try{
-        const users = await userModel.find();
-
+        const users = await userModel.find().select("-password");  // Exclude password field
+        if (!users) {
+            return res.status(404).json({ error: true, message: "No users found" });
+        }
         res.status(200).json(users);
     }catch(error){
-        console.log(error);
-        res.status(500).json(error);
+        console.log("Error in getUsers:", error);
+        res.status(500).json({ error: true, message: "Failed to fetch users" });
     }
 };
 
