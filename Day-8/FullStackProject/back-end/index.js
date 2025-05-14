@@ -1,8 +1,7 @@
 import express from 'express';
 import connectDB from './mongoDB/config.js';
 import cors from 'cors';
-// import dotenv from 'dotenv';
-import * as dotenv from 'dotenv';
+import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import authRoutes from './routes/authRoutes.js';
 
