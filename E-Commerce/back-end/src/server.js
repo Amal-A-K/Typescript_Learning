@@ -3,6 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import connectDB from "./mongoDB/config.js";
+import adminRoute from "./routes/adminRoute.js";
+import userRoute from "./routes/userRoute.js";
 
 const app = express();
 dotenv.config();
@@ -25,6 +27,9 @@ app.use((err, req, res, next) => {
 app.use((req, res) => {
     res.status(404).json({ message: "Route not found" });
 });
+
+app.use('/api/admin',adminRoute);
+app.use('/api/user',userRoute);
 
 // Connect to DB and then start server
 const PORT = process.env.PORT || 5000;
