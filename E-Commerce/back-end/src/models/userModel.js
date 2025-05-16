@@ -19,6 +19,9 @@ const userSchema = new Schema({
         type: String,
         enum: ["admin", "user"],
         default: "user"
+    },
+    cartData: {
+        type: Object
     }
 },{
     timestamps: true

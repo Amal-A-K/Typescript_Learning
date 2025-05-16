@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import User from "./userModel";
+import User from "./userModel.js";
 const Schema = mongoose.Schema;
 const productSchema = new Schema({
     name : {
@@ -41,7 +41,7 @@ const productSchema = new Schema({
     timestamps : true
 });
 
-productSchema.index({ name: 'text', description: 'text' });
+productSchema.index({ name: 'text', description: 'text', category: 'text' });
 const Product = mongoose.model("Product",productSchema);
 
 export default Product;

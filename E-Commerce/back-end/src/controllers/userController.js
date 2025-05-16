@@ -1,11 +1,12 @@
-import User from "../models/userModel";
-import { signInValidation } from "../validation/signInValidation";
-import { signUpValidation } from "../validation/signUpValidation";
-import { updateUserValidation } from "../validation/updateUserValidation";
-import { updateUserPasswordValidation } from "../validation/updateUserPasswordValidation";
+import User from "../models/userModel.js";
+import { signInValidation } from "../validation/signInValidation.js";
+import { signUpValidation } from "../validation/signUpValidation.js";
+import { updateUserValidation } from "../validation/updateUserValidation.js";
+import { updateUserPasswordValidation } from "../validation/updateUserPasswordValidation.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { sendEmail } from "../utils/emailSender";
+import { sendEmail } from "../utils/emailSender.js";
+import Product from "../models/productModel.js";
 
 export const userSignup = async (req, res) => {
     try {
@@ -24,7 +25,8 @@ export const userSignup = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role: "user"
+            role: "user",
+            // cartData:cart
         });
         await newUser.save();
         const JWT_SECRET = process.env.JWT_SECRET;
@@ -43,7 +45,8 @@ export const userSignup = async (req, res) => {
                 id: newUser._id,
                 name: newUser.name,
                 email: newUser.email,
-                role: newUser.role
+                role: newUser.role,
+                // cartData: cart
             }
         });
 
@@ -60,7 +63,7 @@ const RegistrationSuccessNotification = async ({ email, name }) =>{
         subject: "Registration Success Notification",
         html: `
             <div style = "font-family: Times New Roman, sans-serif; ">
-            <h1 style = "color: red;">Registration Success Notification</h1>
+            <h1 style = "color: green;">Registration Success Notification</h1>
             <p>Congratulations ${name}!.</p>
             <p>Your registration was successful in E-Commerce.</p>
             <p>If you want any support, please contact our support team.</p>
@@ -136,8 +139,7 @@ export const updateUserDetails = async (req, res) => {
         if(!user) {
             errors.user = "User not found";
             return res.status(404).json({ errors });
-        }
-        if (req.user._id !== userId && req.user.role  !== "admin") {
+        }        if (req.user.id !== userId && req.user.role !== "admin") {
             errors.role = "You are not authorized to update this user";
             return res.status(403).json({ errors });
         }
@@ -184,7 +186,7 @@ const UserDetailUpdateNotification = async ({ email, name }) =>{
         subject: "User Detail Update Success Notification",
         html: `
             <div style = "font-family: Times New Roman, sans-serif; ">
-            <h1 style = "color: red;">User Detail Update Success Notification</h1>
+            <h1 style = "color: blue;">User Detail Update Success Notification</h1>
             <p>Congratulations ${name}!.</p>
             <p>Your successfully updated your account in E-Commerce.</p>
             <p>If you want any support, please contact our support team.</p>
@@ -261,5 +263,64 @@ const passwordUpdateNotification = async ({ email, name }) =>{
         
     } catch (error) {
         console.error("Error sending password update notification through email : ", error);
+    }
+}
+
+export const addToCart = async (req, res) => {
+    try {
+        const { userid } = req.params;
+        const user = await User.findById(userid);
+        if(!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const { productid } = req.params;
+         const product = await Product.findById(productid);
+        if(!product) {
+            return  res.status(404).json({ message: "Product not found" });
+        }
+        user.cartData[product] += 1;
+        const updateCart = await User.findOneAndUpdate(userid,{cartData: user.cartData })
+        return res.status(200).json({ message: "Successfully added product to user card", cartDetails: updateCart })
+    } catch (error) {
+        return res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};
+
+export const removeFromCart = async (req, res) => {
+    try {
+        const { userid } = req.params;
+        const user = await User.findById(userid);
+        if(!user){
+            return res.status(404).json({ message: "User not found" });
+        }
+        const { productid } = req.params;
+        const product = await Product.findById(productid);
+        if(!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+        if(user.cartData[product] > 0) {
+            user.cartData[product] -= 1;
+            const updateCart = User.findByIdAndUpdate(userid,{ cartData: user.cartData });
+            if(!updateCart) {
+                return res.status(404).json({ message: "Failed to remove from cart" });
+            }
+            return res.status(200).json({ message: "Successfully removed product from cart", cartDetails: updateCart });
+        }
+
+    } catch (error) {
+        return res.status(500).json({ message: "Server error",error: error.message });
+    }
+};
+
+export const getCart = async (req, res) => {
+    try {
+        const { userid } = req.params;
+        const user = await User.findById(userid);
+        if(!user){
+            return res.status(404).json({ message: "Invalid user" });
+        }
+        return res.status(200).json({ message: "Your Cart details", cartDetails: user.cartData });
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
     }
 }

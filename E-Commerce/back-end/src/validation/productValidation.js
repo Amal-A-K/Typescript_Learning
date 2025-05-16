@@ -1,4 +1,3 @@
-// validation/productValidation.js
 import validator from 'validator';
 
 export const validateProduct = (req, res, next) => {
@@ -11,6 +10,14 @@ export const validateProduct = (req, res, next) => {
 
     if (!price || isNaN(price) || price < 0) {
         errors.price = 'Valid price is required';
+    }
+
+    if(!description || validator.isEmpty(description)) {
+        errors.description = 'Product description is required';
+    }
+
+    if(!category || validator.isEmpty(category)) {
+        errors.category = 'Product category is required';
     }
 
     if (Object.keys(errors).length > 0) {

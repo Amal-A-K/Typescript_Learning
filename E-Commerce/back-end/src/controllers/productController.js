@@ -1,5 +1,5 @@
-import Product from "../models/productModel";
-import { validateProduct } from "../validation/productValidation";
+import Product from "../models/productModel.js";
+import { validateProduct } from "../validation/productValidation.js";
 
 export const createProduct = async (req, res) => {
     try {
@@ -79,5 +79,24 @@ export const deleteProduct = async (req, res) => {
 
     } catch (error) {
         return res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};
+
+export const searchProduct = async (req, res, next) => {
+    try {
+        const { q } = req.query;
+        if (!q) {
+            return next(new Error('Please provide a search query',400));
+        }
+        const product = await Product.find(
+            { $text: { $search: q } },
+            { score: { $meta: "textscore" } }
+        ).sort({ score: {$meta: "textscore" } });
+        if (!product) {
+            return res.status(400).json({ message: 'Product not found!'});
+        }
+        return res.status(200).json({ data: product });
+    } catch (error) {
+        
     }
 }
