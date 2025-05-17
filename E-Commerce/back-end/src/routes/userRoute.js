@@ -1,5 +1,5 @@
 import express from 'express';
-import { userSignup, userLogin, updateUserDetails, updateUserPassword, addToCart, removeFromCart, getCart } from '../controllers/userController.js';
+import { userSignup, userLogin, updateUserDetails, updateUserPassword, addToCart, removeFromCart, getCart, forgotPassword, resetPassword } from '../controllers/userController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -8,11 +8,15 @@ const router = express.Router();
 router.post('/registration', userSignup);
 router.post('/login', userLogin);
 
-// User profile routes - Fix the URL patterns to use proper parameter syntax
+// Password reset routes
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password/:resetToken', resetPassword);
+
+// User profile routes
 router.put('/:userId', authenticateToken, updateUserDetails);
 router.put('/:userId/password', authenticateToken, updateUserPassword);
 
-// Cart routes - Fix the URL patterns to use proper parameter syntax
+// Cart routes
 router.post('/cart/:userId/products/:productId', authenticateToken, addToCart);
 router.delete('/cart/:userId/products/:productId', authenticateToken, removeFromCart);
 router.get('/cart/:userId', authenticateToken, getCart);

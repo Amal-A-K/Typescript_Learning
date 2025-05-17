@@ -1,9 +1,15 @@
 import multer from 'multer';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const uploadDir = path.join(__dirname, '../../uploads/products');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, "uploads/products/");
+        cb(null, uploadDir);
     },
     filename: function(req, file, cb) {
         cb(null, `product-${Date.now()}${path.extname(file.originalname)}`)

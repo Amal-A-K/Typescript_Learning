@@ -22,6 +22,12 @@ const userSchema = new Schema({
     },
     cartData: {
         type: Object
+    },
+    resetPasswordToken: {
+        type: String
+    },
+    resetPasswordExpires: {
+        type: Date
     }
 },{
     timestamps: true

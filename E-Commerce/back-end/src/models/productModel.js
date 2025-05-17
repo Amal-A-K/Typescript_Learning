@@ -18,7 +18,7 @@ const productSchema = new Schema({
         type : String,
         required : true,
         enum: {
-            values: ['electronics', 'clothing', 'home', 'books'],
+            values: ['Electronics', 'Clothing', 'Home', 'Books','Phone'],
             message: 'Invalid category'
         }
     },
@@ -29,12 +29,12 @@ const productSchema = new Schema({
     },
     image : [{
         type :String,
-        required : true
+        // required : true
     }],
     createdBy : {
         type : Schema.Types.ObjectId,
         ref: User,
-        required : true
+        // required : true
     }
 },
 {

@@ -86,17 +86,22 @@ export const searchProduct = async (req, res, next) => {
     try {
         const { q } = req.query;
         if (!q) {
-            return next(new Error('Please provide a search query',400));
+            return res.status(400).json({ message: 'Please provide a search query' });
         }
-        const product = await Product.find(
+        const products = await Product.find(
             { $text: { $search: q } },
-            { score: { $meta: "textscore" } }
-        ).sort({ score: {$meta: "textscore" } });
-        if (!product) {
-            return res.status(400).json({ message: 'Product not found!'});
+            { score: { $meta: "textScore" } }
+        ).sort({ score: { $meta: "textScore" } });
+
+        if (!products || products.length === 0) {
+            return res.status(404).json({ message: 'No products found matching your search' });
         }
-        return res.status(200).json({ data: product });
+        return res.status(200).json({ 
+            message: 'Products found',
+            count: products.length,
+            products: products 
+        });
     } catch (error) {
-        
+        return res.status(500).json({ message: "Server Error", error: error.message });
     }
 }
