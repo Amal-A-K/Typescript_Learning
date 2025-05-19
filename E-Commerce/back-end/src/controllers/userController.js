@@ -14,6 +14,7 @@ import { text } from "express";
 export const userSignup = async (req, res) => {
     try {
         const { name, email, password } = req.body;
+        const image = req.files?.map(file => file.path) || [];
         const { errors, isValid } = signUpValidation(req.body);
         if (!isValid) {
             return res.status(400).json({ errors });
@@ -28,6 +29,7 @@ export const userSignup = async (req, res) => {
             name,
             email,
             password: hashedPassword,
+            image:image,
             role: "user",
             cartData: {} // Initialize with empty cart
         });
@@ -48,6 +50,7 @@ export const userSignup = async (req, res) => {
                 id: newUser._id,
                 name: newUser.name,                
                 email: newUser.email,
+                image: newUser.image,
                 role: newUser.role,
                 cartData: newUser.cartData
             }
@@ -122,6 +125,7 @@ export const userLogin = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
+                image:user.image,
                 role: user.role
             }
         })
@@ -134,6 +138,7 @@ export const userLogin = async (req, res) => {
 export const updateUserDetails = async (req, res) => {
     try {
         const { name, email, password } = req.body;
+        const image = req.files?.map(file=> file.path) || [];
         const { userId } = req.params;
         const { errors, isValid } = updateUserValidation(req.body);
         if (!isValid) {
@@ -157,6 +162,9 @@ export const updateUserDetails = async (req, res) => {
         if(password){
             updateData.password = await bcrypt.hash(password,10);
         }
+        if (image) {
+            updateData.image = image;
+        }
         
         const updateUser = await User.findByIdAndUpdate(userId,updateData,{ new: true });
         if(!updateUser) {
@@ -174,6 +182,7 @@ export const updateUserDetails = async (req, res) => {
                 id: updateUser._id,
                 name: updateUser.name,
                 email: updateUser.email,
+                image: updateUser.image,
                 role: updateUser.role,
                 createdAt: updateUser.createdAt
             }
@@ -376,31 +385,60 @@ export const resetPassword = async (req, res) => {
 
 export const addToCart = async (req, res) => {
     try {
-        const { userid, productid } = req.params;
-        const user = await User.findById(userid);
+        const { userId, productId } = req.params;
+        const user = await User.findById(userId);
         if(!user) {
             return res.status(404).json({ message: "User not found" });
-        }
-        const product = await Product.findById(productid);
+        }        const product = await Product.findById(productId);
         if(!product) {
             return res.status(404).json({ message: "Product not found" });
         }
-
-        // Initialize cart data for this product if it doesn't exist
-        if (!user.cartData[productid]) {
-            user.cartData[productid] = 0;
+        
+        // Initialize cartData if it doesn't exist
+        if (!user.cartData) {
+            user.cartData = {};
         }
         
-        user.cartData[productid] += 1;
+        // Initialize cart data for this product if it doesn't exist
+        if (!user.cartData[productId]) {
+            user.cartData[productId] = 0;
+        }
+        user.cartData[productId] += 1;
         const updateCart = await User.findByIdAndUpdate(
-            userid,
+            userId,
             { cartData: user.cartData },
             { new: true }
         );
 
+        // Get updated cart details
+        const cartWithDetails = {};
+        let totalPrice = 0;
+
+        for (const [productId, quantity] of Object.entries(updateCart.cartData)) {
+            const cartProduct = await Product.findById(productId);
+            if (cartProduct) {
+                const itemTotal = cartProduct.price * quantity;
+                cartWithDetails[productId] = {
+                    product: {
+                        id: cartProduct._id,
+                        name: cartProduct.name,
+                        image: cartProduct.image,
+                        price:"₹" + cartProduct.price.toLocaleString('en-IN')
+                    },
+                    quantity,
+                    itemTotal:"₹" + itemTotal.toLocaleString('en-IN')
+                };
+                totalPrice += itemTotal;
+            }
+        }
+
         return res.status(200).json({ 
-            message: "Successfully added product to user cart", 
-            cartDetails: updateCart.cartData 
+            message: "Successfully added product to cart", 
+            cartDetails: cartWithDetails,
+            cartSummary: {
+                totalItems: Object.values(updateCart.cartData).reduce((sum, quantity) => sum + quantity, 0),
+                totalPrice:"₹" + totalPrice.toLocaleString('en-IN')
+            }
         })
     } catch (error) {
         return res.status(500).json({ message: "Server Error", error: error.message });
@@ -409,37 +447,67 @@ export const addToCart = async (req, res) => {
 
 export const removeFromCart = async (req, res) => {
     try {
-        const { userid, productid } = req.params;
-        const user = await User.findById(userid);
+        const { userId, productId } = req.params;
+        const user = await User.findById(userId);
         if(!user){
             return res.status(404).json({ message: "User not found" });
-        }
-        const product = await Product.findById(productid);
+        }        const product = await Product.findById(productId);
         if(!product) {
             return res.status(404).json({ message: "Product not found" });
         }
 
+        // Initialize cartData if it doesn't exist
+        if (!user.cartData) {
+            user.cartData = {};
+        }
+
         // Check if product exists in cart and has quantity greater than 0
-        if(!user.cartData[productid] || user.cartData[productid] <= 0) {
+        if(!user.cartData[productId] || user.cartData[productId] <= 0) {
             return res.status(400).json({ message: "Product not in cart" });
         }
 
-        user.cartData[productid] -= 1;
+        user.cartData[productId] -= 1;
         
         // Remove product from cart if quantity becomes 0
-        if(user.cartData[productid] === 0) {
-            delete user.cartData[productid];
+        if(user.cartData[productId] === 0) {
+            delete user.cartData[productId];
         }
 
         const updateCart = await User.findByIdAndUpdate(
-            userid,
+            userId,
             { cartData: user.cartData },
             { new: true }
         );
+
+        // Get updated cart details
+        const cartWithDetails = {};
+        let totalPrice = 0;
+
+        for (const [productId, quantity] of Object.entries(updateCart.cartData)) {
+            const cartProduct = await Product.findById(productId);
+            if (cartProduct) {
+                const itemTotal = cartProduct.price * quantity;
+                cartWithDetails[productId] = {
+                    product: {
+                        id: cartProduct._id,
+                        name: cartProduct.name,
+                        image: cartProduct.image,
+                        price:"₹" + cartProduct.price.toLocaleString('en-IN')
+                    },
+                    quantity,
+                    itemTotal:"₹" + itemTotal.toLocaleString('en-IN')
+                };
+                totalPrice += itemTotal;
+            }
+        }
         
         return res.status(200).json({ 
             message: "Successfully removed product from cart", 
-            cartDetails: updateCart.cartData 
+            cartDetails: cartWithDetails,
+            cartSummary: {
+                totalItems: Object.values(updateCart.cartData).reduce((sum, quantity) => sum + quantity, 0),
+                totalPrice:"₹" + totalPrice.toLocaleString('en-IN')
+            }
         });
 
     } catch (error) {
@@ -449,10 +517,14 @@ export const removeFromCart = async (req, res) => {
 
 export const getCart = async (req, res) => {
     try {
-        const { userid } = req.params;
-        const user = await User.findById(userid);
+        const { userId } = req.params;        const user = await User.findById(userId);
         if(!user){
             return res.status(404).json({ message: "Invalid user" });
+        }
+
+        // Initialize cartData if it doesn't exist
+        if (!user.cartData) {
+            user.cartData = {};
         }
         
         // Get the details of all products in the cart
@@ -467,10 +539,11 @@ export const getCart = async (req, res) => {
                     product: {
                         id: product._id,
                         name: product.name,
-                        price: product.price
+                        image: product.image,
+                        price:"₹" + product.price.toLocaleString('en-IN')
                     },
                     quantity,
-                    itemTotal: itemTotal // Price * quantity for this item
+                    itemTotal:"₹" + itemTotal.toLocaleString('en-IN')
                 };
                 totalPrice += itemTotal;
             }
@@ -481,7 +554,7 @@ export const getCart = async (req, res) => {
             cartDetails: cartWithDetails,
             cartSummary: {
                 totalItems: Object.values(user.cartData).reduce((sum, quantity) => sum + quantity, 0),
-                totalPrice: totalPrice.toFixed(2) // Rounded to 2 decimal places
+                totalPrice:"₹" + totalPrice.toLocaleString('en-IN')
             }
         });
     } catch (error) {

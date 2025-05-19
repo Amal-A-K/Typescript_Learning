@@ -12,11 +12,15 @@ const app = express();
 dotenv.config();
 
 // Middleware
-app.use(helmet());
-app.use(cors());
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+app.use(cors({
+    origin:'http://localhost:3000'
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads'));
+app.use('/api/uploads', express.static('uploads'));
 
 // routes
 app.use('/api/admin', adminRoute);

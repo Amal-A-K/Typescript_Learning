@@ -6,8 +6,8 @@ import upload from "../middleware/uploadMiddleware.js";
 const router = express.Router();
 
 // Create and update routes with file upload middleware
-router.post('/createProduct', authenticateToken, isadmin, upload.single('image'), createProduct);
-router.put('/updateProduct/:id', authenticateToken, isadmin, upload.single('image'), updateProduct);
+router.post('/createProduct', authenticateToken, isadmin, upload.array('image'), createProduct);
+router.put('/updateProduct/:id', authenticateToken, isadmin, upload.array('image'), updateProduct);
 
 // Get and delete routes without file upload middleware
 router.get('/getProducts', getProducts);

@@ -3,8 +3,17 @@ import { validateProduct } from "../validation/productValidation.js";
 
 export const createProduct = async (req, res) => {
     try {
-        const { name, price, description, category, stock, image } = req.body;
-        const savedProduct = await Product.create({ name, price, description, category, stock, image });
+        const { name, price, description, category, stock } = req.body;
+        const images = req.files?.map(file => file.path) || [];
+        const savedProduct = await Product.create({ 
+            name,
+            price, 
+            description, 
+            category, 
+            stock, 
+            image:images,
+            createdBy: req.user.id 
+        });
         if(!savedProduct){
             return res.status(404).json({ message: "New Product is not created" });
         }
@@ -46,13 +55,25 @@ export const getProductById = async(req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name,price,description,category,stock,image } = req.body;
+        const { name,price,description,category,stock } = req.body;
         const product = await Product.findById(id);
         if(!product){
-            return res.status(400).json({ message: "No product found. Pass the correct product id." });
+            return res.status(400).json({ 
+                message: "No product found. Pass the correct product id." 
+            });
         }
+
+        const newImages = req.files?.map(file => file.path) || [];
+
+        const updatedImages = [...product.image,...newImages];
+
         const updateProduct = await Product.findByIdAndUpdate(id,{
-            name, price,description,category,stock,image
+            name, 
+            price,
+            description,
+            category,
+            stock,
+            image:updatedImages
         },{ new: true });
         if (!updateProduct) {
             return res.status(404).json({ message: "Failed to update product" });
