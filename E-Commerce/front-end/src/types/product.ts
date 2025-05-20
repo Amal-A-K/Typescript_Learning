@@ -8,3 +8,16 @@ export interface Product {
     image?: string[];
     createdBy?: string;
 }
+
+export interface CartItem {
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image?: string;
+}
+
+export interface CartData {
+  items: CartItem[];
+  total: number;
+}

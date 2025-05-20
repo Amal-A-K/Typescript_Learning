@@ -24,7 +24,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [isAdmin, setIsAdmin] = useState<boolean>(false);    useEffect(() => {
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);    
+    useEffect(() => {
         const user = AuthService.getCurrentUser();
         const token = localStorage.getItem('token');
         if (user && token) {
@@ -41,7 +42,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsAuthenticated(false);
             setIsAdmin(false);
         }
-    }, []);    const login = async (email: string, password: string, isAdmin: boolean = false) => {
+    }, []);    
+    const login = async (email: string, password: string, isAdmin: boolean = false) => {
         try {
             const response = await AuthService.login({ email, password }, isAdmin);
             if (response.token && response.user) {

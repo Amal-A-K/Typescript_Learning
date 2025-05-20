@@ -59,13 +59,14 @@ const Profile = () => {
 
     return (
         <Container maxWidth="md">
-            <Paper elevation={3} sx={{ p: 4, mt: 4 }}>                <Typography variant="h4" gutterBottom>
+            <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
+                <Typography variant="h4" gutterBottom>
                     Profile
                 </Typography>
-                <Box 
-                    component="form" 
+                <Box
+                    component="form"
                     onSubmit={handleSubmit}
-                    sx={{ 
+                    sx={{
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 3,
@@ -77,7 +78,8 @@ const Profile = () => {
                             src={user?.image?.[0]}
                             sx={{ width: 120, height: 120 }}
                         />
-                    </Box>                    {editing ? (
+                    </Box>                    
+                    {editing ? (
                         <>
                             <Box>
                                 <Button
@@ -118,8 +120,8 @@ const Profile = () => {
                                     name="currentPassword"
                                     type="password"
                                     value={formData.currentPassword}
-                                        onChange={handleChange}
-                                    />                            </Box>
+                                    onChange={handleChange}
+                                />                            </Box>
                             <Box>
                                 <TextField
                                     fullWidth
@@ -145,32 +147,34 @@ const Profile = () => {
                                     Cancel
                                 </Button>
                             </Box>
-                            </>
-                        ) : (
-                            <>                                <Box>
-                                    <Typography variant="body1">
-                                        <strong>Name:</strong> {user?.name}
-                                    </Typography>
-                                </Box>
-                                <Box>
-                                    <Typography variant="body1">
-                                        <strong>Email:</strong> {user?.email}
-                                    </Typography>
-                                </Box>
-                                <Box>
-                                    <Typography variant="body1">
-                                        <strong>Role:</strong> {user?.role}
-                                    </Typography>
-                                </Box>
-                                <Box>
-                                    <Button
-                                        variant="contained"
-                                        onClick={() => setEditing(true)}
-                                    >
-                                        Edit Profile
-                                    </Button>
-                                </Box>
-                            </>                        )}
+                        </>
+                    ) : (
+                        <>                                
+                        <Box>
+                            <Typography variant="body1">
+                                <strong>Name:</strong> {user?.name}
+                            </Typography>
+                        </Box>
+                            <Box>
+                                <Typography variant="body1">
+                                    <strong>Email:</strong> {user?.email}
+                                </Typography>
+                            </Box>
+                            <Box>
+                                <Typography variant="body1">
+                                    <strong>Role:</strong> {user?.role}
+                                </Typography>
+                            </Box>
+                            <Box>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => setEditing(true)}
+                                >
+                                    Edit Profile
+                                </Button>
+                            </Box>
+                        </>
+                    )}
                 </Box>
             </Paper>
         </Container>

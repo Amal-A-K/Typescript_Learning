@@ -41,7 +41,7 @@ const Home = () => {
     const filteredProducts = products.filter(product => {
         const matchesCategory = category === 'All' || product.category === category;
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            product.description.toLowerCase().includes(searchTerm.toLowerCase());
+            product.description.toLowerCase().includes(searchTerm.toLowerCase());
         return matchesCategory && matchesSearch;
     });
 
@@ -51,7 +51,8 @@ const Home = () => {
 
     return (
         <Container>
-            <Box sx={{ my: 4 }}>                <Typography variant="h4" component="h1" gutterBottom>
+            <Box sx={{ my: 4 }}>
+                <Typography variant="h4" component="h1" gutterBottom>
                     Our Products
                 </Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 4 }}>
@@ -76,7 +77,8 @@ const Home = () => {
                                     {cat}
                                 </MenuItem>
                             ))}
-                        </TextField>                    </Box>
+                        </TextField>
+                    </Box>
                 </Box>
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 3 }}>
                     {filteredProducts.map((product) => (

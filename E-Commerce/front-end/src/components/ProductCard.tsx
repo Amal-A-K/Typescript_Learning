@@ -24,7 +24,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
                     {product.description}
                 </Typography>
                 <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
-                    ${product.price}
+                    ₹{product.price.toLocaleString('en-IN')}
                 </Typography>
                 <Button 
                     variant="contained" 
