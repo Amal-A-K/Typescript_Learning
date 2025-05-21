@@ -25,6 +25,16 @@ interface TabPanelProps {
     value: number;
 }
 
+interface FormDataState {
+    name: string;
+    price: string;
+    category: string;
+    description: string;
+    stock: string;
+    image: string;
+    imageFiles: FileList | null;
+}
+
 const TabPanel = (props: TabPanelProps) => {
     const { children, value, index, ...other } = props;
     return (
@@ -40,17 +50,24 @@ const AdminDashboard = () => {
     const [users, setUsers] = useState<any[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<FormDataState>({
         name: '',
         price: '',
         category: '',
         description: '',
         stock: '',
         image: '',
+        imageFiles: null,
     });
     const [cartDialogOpen, setCartDialogOpen] = useState(false);
     const [currentUserCart, setCurrentUserCart] = useState<CartData | null>(null);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+    const [deleteUserConfirmOpen, setDeleteUserConfirmOpen] = useState(false);
+    const [userToDelete, setUserToDelete] = useState<string | null>(null);
+
+    const [deleteProductConfirmOpen, setDeleteProductConfirmOpen] = useState(false);
+    const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
     useEffect(() => {
         if (tabValue === 0) {
@@ -80,7 +97,7 @@ const AdminDashboard = () => {
 
     const handleOpenAdd = () => {
         setEditingProduct(null);
-        setFormData({ name: '', price: '', category: '', description: '', stock: '', image: '' });
+        setFormData({ name: '', price: '', category: '', description: '', stock: '', image: '', imageFiles: null });
         setOpenDialog(true);
     };
 
@@ -93,6 +110,7 @@ const AdminDashboard = () => {
             description: product.description,
             stock: String(product.stock),
             image: Array.isArray(product.image) ? product.image[0] || '' : product.image || '',
+            imageFiles: null
         });
         setOpenDialog(true);
     };
@@ -102,8 +120,21 @@ const AdminDashboard = () => {
         setEditingProduct(null);
     };
 
+    // const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     setFormData({ ...formData, [e.target.name]: e.target.value });
+    // };
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (e.target.name === 'imageFiles' && e.target.files) {
+            setFormData({
+                ...formData,
+                [e.target.name]: e.target.files
+            });
+        } else {
+            setFormData({
+                ...formData,
+                [e.target.name]: e.target.value
+            });
+        }
     };
 
     const handleOpenCart = async (userId: string) => {
@@ -152,15 +183,55 @@ const AdminDashboard = () => {
         }
     };
 
+    // const handleSubmitProduct = async () => {
+    //     try {
+    //         if (editingProduct) {
+    //             // Update product
+    //             await api.put(`/products/updateProduct/${editingProduct._id}`, formData);
+    //         } else {
+    //             // Create new product
+    //             await api.post('/products/createProduct', formData);
+    //         }
+    //         loadProducts();
+    //         handleCloseDialog();
+    //     } catch (error) {
+    //         console.error("Error saving product:", error);
+    //     }
+    // };
     const handleSubmitProduct = async () => {
         try {
+            const formDataToSend = new FormData();
+
+            // Append all text fields
+            Object.entries(formData).forEach(([key, value]) => {
+                if (key !== 'imageFiles' && value !== null) {
+                    formDataToSend.append(key, value.toString());
+                }
+            });
+
+            // Append files if they exist
+            if (formData.imageFiles) {
+                Array.from(formData.imageFiles).forEach((file: File) => {
+                    formDataToSend.append('image', file);
+                });
+            }
+
             if (editingProduct) {
                 // Update product
-                await api.put(`/products/updateProduct/${editingProduct._id}`, formData);
+                await api.put(`/products/updateProduct/${editingProduct._id}`, formDataToSend, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
             } else {
                 // Create new product
-                await api.post('/products/createProduct', formData);
+                await api.post('/products/createProduct', formDataToSend, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
             }
+
             loadProducts();
             handleCloseDialog();
         } catch (error) {
@@ -168,26 +239,54 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleDeleteProduct = async (productId: string) => {
-        if (window.confirm('Are you sure you want to delete this product?')) {
-            try {
-                await api.delete(`/products/deleteProduct/${productId}`);
-                loadProducts();
-            } catch (error) {
-                console.error('Error deleting product:', error);
-            }
+    // Product deletion handler
+    const handleDeleteProductClick = (productId: string) => {
+        setProductToDelete(productId);
+        setDeleteProductConfirmOpen(true);
+    };
+
+    const handleDeleteProduct = async () => {
+        if (!productToDelete) return;
+
+        try {
+            await api.delete(`/products/deleteProduct/${productToDelete}`);
+            loadProducts();
+        } catch (error) {
+            console.error('Error deleting product:', error);
+        } finally {
+            setDeleteProductConfirmOpen(false);
+            setProductToDelete(null);
         }
     };
 
-    const handleDeleteUser = async (userId: string) => {
-        if (window.confirm('Are you sure you want to delete this user?')) {
-            try {
-                await api.delete(`/admin/users/${userId}`);
-                loadUsers();
-            } catch (error) {
-                console.error('Error deleting user:', error);
-            }
+    const handleCancelDeleteProduct = () => {
+        setDeleteProductConfirmOpen(false);
+        setProductToDelete(null);
+    };
+
+    // admin user deletion handler
+    const handleDeleteClick = (userId: string) => {
+        setUserToDelete(userId);
+        setDeleteUserConfirmOpen(true);
+    };
+
+    const handleDeleteUser = async () => {
+        if (!userToDelete) return;
+
+        try {
+            await api.delete(`/admin/users/${userToDelete}`);
+            loadUsers();
+        } catch (error) {
+            console.error('Error deleting user:', error);
+        } finally {
+            setDeleteUserConfirmOpen(false);
+            setUserToDelete(null);
         }
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteUserConfirmOpen(false);
+        setUserToDelete(null);
     };
 
     return (
@@ -254,7 +353,7 @@ const AdminDashboard = () => {
                                         <Button
                                             size="small"
                                             color="error"
-                                            onClick={() => handleDeleteProduct(product._id)}
+                                            onClick={() => handleDeleteProductClick(product._id)}
                                         >
                                             Delete
                                         </Button>
@@ -307,10 +406,17 @@ const AdminDashboard = () => {
                                         </Button>
                                     </TableCell>
                                     <TableCell>
-                                        <Button
+                                        {/* <Button
                                             size="small"
                                             color="error"
                                             onClick={() => handleDeleteUser(user._id)}
+                                        >
+                                            Delete
+                                        </Button> */}
+                                        <Button
+                                            size="small"
+                                            color="error"
+                                            onClick={() => handleDeleteClick(user._id)}
                                         >
                                             Delete
                                         </Button>
@@ -372,13 +478,42 @@ const AdminDashboard = () => {
                             value={formData.stock}
                             onChange={handleFormChange}
                         />
-                        <TextField
+                        {/* <TextField
                             label="Image"
+                            name="image"
+                            type="file"
+                            value={formData.image}
+                            onChange={handleFormChange}
+                        /> */}
+                        <TextField
+                            label="Image URL"
                             name="image"
                             type="text"
                             value={formData.image}
                             onChange={handleFormChange}
+                            fullWidth
                         />
+                        <Typography variant="body2" sx={{ textAlign: 'center' }}>OR</Typography>
+                        <Button
+                            variant="outlined"
+                            component="label"
+                            fullWidth
+                        >
+                            Upload Image
+                            <input
+                                type="file"
+                                name="imageFiles"
+                                hidden
+                                accept="image/*"
+                                onChange={handleFormChange}
+                                multiple
+                            />
+                        </Button>
+                        {formData.imageFiles && (
+                            <Typography variant="caption">
+                                {formData.imageFiles.length} file(s) selected
+                            </Typography>
+                        )}
                     </Box>
                 </DialogContent>
                 <DialogActions>
@@ -479,7 +614,69 @@ const AdminDashboard = () => {
                     <Button onClick={handleCloseCartDialog}>Close</Button>
                 </DialogActions>
             </Dialog>
+            {/* Delete Product Confirmation Dialog */}
+            <Dialog
+                open={deleteProductConfirmOpen}
+                onClose={handleCancelDeleteProduct}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    {productToDelete && (() => {
+                        const product = products.find(u => u._id === productToDelete);
+                        return (
+                            <>
+                                <DialogContentText id="alert-dialog-description">
+                                    Are you sure want to delete product{' '}
+                                    <strong>{product?.name}</strong> ?
+                                </DialogContentText>
+                                <DialogContentText>
+                                    This action cannot be undone.
+                                </DialogContentText>
+                            </>
+                        );
+                    })()}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelDeleteProduct}>Cancel</Button>
+                    <Button onClick={handleDeleteProduct} color="error" autoFocus>
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
+            {/* Delete Confirmation Dialog */}
+            <Dialog
+                open={deleteUserConfirmOpen}
+                onClose={handleCancelDelete}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    {userToDelete && (() => {
+                        const user = users.find(u => u._id === userToDelete);
+                        return (
+                            <>
+                                <DialogContentText id="alert-dialog-description">
+                                    Are you sure want to delete user{' '}
+                                    <strong>{user?.name}</strong> ({user?.email})?
+                                </DialogContentText>
+                                <DialogContentText>
+                                    This action cannot be undone.
+                                </DialogContentText>
+                            </>
+                        );
+                    })()}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelDelete}>Cancel</Button>
+                    <Button onClick={handleDeleteUser} color="error" autoFocus>
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };

@@ -3,15 +3,18 @@ import { AppBar, Toolbar, Typography, Button, IconButton, Badge } from '@mui/mat
 import { ShoppingCart } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../contexts/CartContext';
 
 const Navbar = () => {
     const navigate = useNavigate();
     const { user, logout, isAuthenticated } = useAuth();
+    const { cartSummary, loadingCart } = useCart();
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
+    const cartItemCount = cartSummary ? cartSummary.totalItems : 0;
 
     return (
         <AppBar position="static">
@@ -22,7 +25,7 @@ const Navbar = () => {
                 {isAuthenticated ? (
                     <>
                         <IconButton color="inherit" onClick={() => navigate('/cart')}>
-                            <Badge badgeContent={0} color="error">
+                            <Badge badgeContent={loadingCart ? 0 : cartItemCount} color="error">
                                 <ShoppingCart />
                             </Badge>
                         </IconButton>
