@@ -120,9 +120,6 @@ const AdminDashboard = () => {
         setEditingProduct(null);
     };
 
-    // const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setFormData({ ...formData, [e.target.name]: e.target.value });
-    // };
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.name === 'imageFiles' && e.target.files) {
             setFormData({
@@ -183,21 +180,6 @@ const AdminDashboard = () => {
         }
     };
 
-    // const handleSubmitProduct = async () => {
-    //     try {
-    //         if (editingProduct) {
-    //             // Update product
-    //             await api.put(`/products/updateProduct/${editingProduct._id}`, formData);
-    //         } else {
-    //             // Create new product
-    //             await api.post('/products/createProduct', formData);
-    //         }
-    //         loadProducts();
-    //         handleCloseDialog();
-    //     } catch (error) {
-    //         console.error("Error saving product:", error);
-    //     }
-    // };
     const handleSubmitProduct = async () => {
         try {
             const formDataToSend = new FormData();
@@ -328,6 +310,7 @@ const AdminDashboard = () => {
                                 <TableRow key={product._id}>
                                     <TableCell>
                                         <img
+                                            className='image'
                                             src={Array.isArray(product.image) ? product.image[0] || '' : product.image || ''}
                                             alt={product.name}
                                             style={{
@@ -406,13 +389,6 @@ const AdminDashboard = () => {
                                         </Button>
                                     </TableCell>
                                     <TableCell>
-                                        {/* <Button
-                                            size="small"
-                                            color="error"
-                                            onClick={() => handleDeleteUser(user._id)}
-                                        >
-                                            Delete
-                                        </Button> */}
                                         <Button
                                             size="small"
                                             color="error"

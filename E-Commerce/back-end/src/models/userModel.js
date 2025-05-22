@@ -24,7 +24,9 @@ const userSchema = new Schema({
         default: "user"
     },
     cartData: {
-        type: Object
+        type: Map,
+        of: Number,
+        default: {}
     },
     resetPasswordToken: {
         type: String

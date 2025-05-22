@@ -1,5 +1,5 @@
 import express from 'express';
-import { userSignup, userLogin, updateUserDetails, updateUserPassword, addToCart, removeFromCart, updateCartQuantity, getCartDetails, forgotPassword, resetPassword } from '../controllers/userController.js';
+import { userSignup, userLogin, updateUserDetails, updateUserPassword, addToCart,getCartDetailsForUser, removeFromCart, updateCartQuantity, getCartDetails, forgotPassword, resetPassword } from '../controllers/userController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import upload from '../middleware/uploadMiddleware.js';
 
@@ -17,10 +17,7 @@ router.post('/reset-password/:resetToken', resetPassword);
 router.put('/:userId', authenticateToken,upload.array('image'), updateUserDetails);
 router.put('/:userId/password', authenticateToken, updateUserPassword);
 
-// Cart routes
-// router.post('/cart/:userId/products/:productId', authenticateToken, addToCart);
-// router.delete('/cart/:userId/products/:productId', authenticateToken, removeFromCart);
-// router.get('/cart/:userId', authenticateToken, getCart);
+// User Cart routes
 router.post('/cart/add', authenticateToken, addToCart);
 router.post('/cart/remove', authenticateToken, removeFromCart); // Use POST for idempotent action or DELETE if it's purely for removal
 router.put('/cart/update', authenticateToken, updateCartQuantity); // For changing quantity of an existing item

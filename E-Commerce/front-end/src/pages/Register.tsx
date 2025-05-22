@@ -25,7 +25,7 @@ const validationSchema = yup.object({
 
 const Register = () => {
     const navigate = useNavigate();
-    const [selectedImage, setSelectedImage] = useState<File[]>([]);
+    const [selectedImage, setSelectedImage] = useState<File[] >([]);
 
     const formik = useFormik({
         initialValues: {
@@ -104,6 +104,7 @@ const Register = () => {
                         Upload Profile Image
                         <input
                             type="file"
+                            name='image'
                             hidden
                             accept="image/*"
                             multiple

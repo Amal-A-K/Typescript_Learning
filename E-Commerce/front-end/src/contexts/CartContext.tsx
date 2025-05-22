@@ -1,4 +1,3 @@
-// src/contexts/CartContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import api from '../services/api';
 import { useAuth } from './AuthContext'; // Import useAuth to depend on authentication state
@@ -6,7 +5,7 @@ import { useAuth } from './AuthContext'; // Import useAuth to depend on authenti
 interface ProductInCart {
     id: string;
     name: string;
-    image: string[];
+    image: string;
     price: number;
 }
 
@@ -56,7 +55,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         setLoadingCart(true);
         setErrorCart(null);
         try {
-            const response = await api.get('/api/users/cart');
+            const response = await api.get('/users/cart');           
             setCartItems(response.data.cartDetails);
             setCartSummary(response.data.cartSummary);
         } catch (err: any) {
@@ -77,7 +76,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
             return false;
         }
         try {
-            await api.post('/api/users/cart/add', { productId, quantity });
+            await api.post('/users/cart/add', { productId, quantity });
             await fetchCartDetails(); // Re-fetch cart after adding
             return true;
         } catch (err: any) {
@@ -93,12 +92,19 @@ export const CartProvider = ({ children }: CartProviderProps) => {
             return false;
         }
         try {
-            await api.put('/api/users/cart/update', { productId, quantity: newQuantity });
-            await fetchCartDetails(); // Re-fetch cart after update
+            setCartItems(prevItems =>
+                prevItems.map(item =>
+                    item.product.id === productId
+                        ? { ...item, quantity: newQuantity, itemTotal: item.product.price * newQuantity }
+                        : item
+                ).filter(item => item.quantity > 0)
+            );
+            await api.put('/users/cart/update', { productId, quantity: newQuantity });
             return true;
         } catch (err: any) {
             console.error('Error updating cart quantity:', err);
             setErrorCart(err.response?.data?.message || 'Failed to update cart quantity.');
+            await fetchCartDetails();
             return false;
         }
     };
@@ -109,12 +115,14 @@ export const CartProvider = ({ children }: CartProviderProps) => {
             return false;
         }
         try {
-            await api.post('/api/users/cart/remove', { productId }); // Use POST as per your backend
-            await fetchCartDetails(); // Re-fetch cart after removal
+            // Optimistic update
+            setCartItems(prevItems => prevItems.filter(item => item.product.id !== productId));
+            await api.post('/users/cart/remove', { productId }); // Use POST as per your backend
             return true;
         } catch (err: any) {
             console.error('Error removing from cart:', err);
             setErrorCart(err.response?.data?.message || 'Failed to remove item from cart.');
+             await fetchCartDetails(); 
             return false;
         }
     };
