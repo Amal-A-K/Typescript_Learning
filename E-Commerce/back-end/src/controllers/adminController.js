@@ -135,25 +135,44 @@ export const getUserCart = async (req, res) => {
         let total = 0;
 
         if (user.cartData) {
-            for (const [productId, quantity] of Object.entries(user.cartData)) {
+            const cartEntries = user.cartData instanceof Map
+                ? Array.from(user.cartData.entries())
+                : Object.entries(user.cartData);
+            // for (const [productId, quantity] of Object.entries(user.cartData)) {
+            for (const [productId, quantity] of cartEntries) {
+                try{
                 const product = await Product.findById(productId);
                 if (product) {
                     const itemTotal = product.price * quantity;
                     total += itemTotal;
+
+                    const imageUrl = (Array.isArray(product.image) && product.image.length > 0)
+                        ? product.image[0]
+                        : ''; // Default to empty string
+
 
                     cartItems.push({
                         productId,
                         name: product.name,
                         price: product.price,
                         quantity,
-                        image: product.image?.[0] || '',
+                        // image: product.image?.[0] || '',
+                        image: imageUrl,
                         total: itemTotal
                     });
-                }
+                } else {
+                    // Log if product is not found, but continue processing other items
+                    console.warn(`Product with ID ${productId} not found for user ${userId}'s cart.`);
+                } 
+            }catch(productError){
+                console.error(`Error processing product ${productId} in cart for user ${userId}:`, productError);
+            }
+            
             }
         }
         return res.status(200).json({ message: "Cart Details", cart: { items: cartItems, total } });
     } catch (error) {
+        console.error("Error in getUserCart:", error);  
         return res.status(500).json({ message: "Server error", error: error.message });
     }
 };
@@ -195,9 +214,9 @@ export const deleteUserCartItem = async (req, res) => {
         if (user.cartData && user.cartData[productId]) {
             delete user.cartData[productId];
             const savedData = await user.save();
-            return res.status(200).json({ message: "Cart item removed successfully", data: savedData});
+            return res.status(200).json({ message: "Cart item removed successfully", data: savedData });
         }
-        
+
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message });
     }
@@ -271,6 +290,139 @@ const UserRemovalNotification = async ({ email, name }) => {
 
     } catch (error) {
         console.error("Error sending user removal notification through email : ", error);
+    }
+};
+
+export const updateUserRole = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { role } = req.body;
+
+        if (!['admin', 'user'].includes(role)) {
+            return res.status(400).json({ message: "Invalid role" });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { role },
+            { new: true }
+        ).select("-password");
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(200).json({ message: "Role updated", user });
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+export const toggleUserBlock = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { isBlocked, reason } = req.body;
+
+        // Validate input
+        if (typeof isBlocked !== 'boolean') {
+            return res.status(400).json({
+                message: "isBlocked must be a boolean value"
+            });
+        }
+
+        // Find the user
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        // Prevent blocking admins
+        if (user.role === 'admin') {
+            return res.status(403).json({
+                message: "Cannot block admin users"
+            });
+        }
+
+        // Update user block status
+        user.isBlocked = isBlocked;
+        if (isBlocked) {
+            user.blockedAt = new Date();
+            user.blockReason = reason || 'Violation of terms of service';
+        } else {
+            user.blockedAt = undefined;
+            user.blockReason = undefined;
+        }
+
+        await user.save();
+
+        // Send notification email
+        await sendBlockStatusNotification({
+            email: user.email,
+            name: user.name,
+            isBlocked,
+            reason: user.blockReason
+        });
+
+        return res.status(200).json({
+            message: `User ${isBlocked ? 'blocked' : 'unblocked'} successfully`,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                isBlocked: user.isBlocked,
+                blockedAt: user.blockedAt,
+                blockReason: user.blockReason
+            }
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Server error",
+            error: error.message
+        });
+    }
+};
+
+// Email notification function
+const sendBlockStatusNotification = async ({ email, name, isBlocked, reason }) => {
+    const subject = isBlocked
+        ? "Your Account Has Been Blocked"
+        : "Your Account Has Been Reactivated";
+
+    const html = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2>${subject}</h2>
+            <p>Dear ${name},</p>
+            
+            ${isBlocked ? `
+                <p>We regret to inform you that your account has been blocked due to:</p>
+                <p><strong>Reason:</strong> ${reason}</p>
+                <p>If you believe this is a mistake, please contact our support team.</p>
+            ` : `
+                <p>We're pleased to inform you that your account has been reactivated.</p>
+                <p>You can now log in and access all features as usual.</p>
+            `}
+            
+            <p>Thank you for your understanding.</p>
+            <p>Best regards,</p>
+            <p>The Admin Team</p>
+        </div>
+    `;
+
+    const mailOptions = {
+        from: process.env.EMAIL_FROM,
+        to: email,
+        subject,
+        html
+    };
+
+    try {
+        await sendEmail(mailOptions);
+        console.log(`Block status notification sent to ${email}`);
+    } catch (error) {
+        console.error("Error sending block status email:", error);
     }
 };
 

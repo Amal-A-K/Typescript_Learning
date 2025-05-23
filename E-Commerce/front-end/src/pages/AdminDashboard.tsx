@@ -13,6 +13,8 @@ import {
     Box,
     Tab,
     Tabs,
+    Select,
+    MenuItem,
     Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
     TextField
 } from '@mui/material';
@@ -69,6 +71,8 @@ const AdminDashboard = () => {
     const [deleteProductConfirmOpen, setDeleteProductConfirmOpen] = useState(false);
     const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
+    const [searchTerm, setSearchTerm] = useState('');
+
     useEffect(() => {
         if (tabValue === 0) {
             loadProducts();
@@ -89,6 +93,7 @@ const AdminDashboard = () => {
     const loadUsers = async () => {
         try {
             const response = await api.get('/admin/getAllUsers');
+            console.log("Users data:", response.data.users); // Add this line
             setUsers(response.data.users);
         } catch (error) {
             console.error('Error loading users:', error);
@@ -270,6 +275,55 @@ const AdminDashboard = () => {
         setDeleteUserConfirmOpen(false);
         setUserToDelete(null);
     };
+    const getUserImageUrl = (img: any): string | null => {
+        const image = Array.isArray(img) ? img[0] : img;
+        if (typeof image === 'string' && image.trim() !== '') {
+            return image.startsWith('http')
+                ? image
+                : `http://localhost:5000${image}`;
+        }
+        return null;
+    };
+
+    const filteredUsers = users.filter(user =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    useEffect(() => {
+        console.log("Filtered users:", filteredUsers);
+    }, [searchTerm, users]);
+
+    const handleRoleChange = async (userId: string, newRole: string) => {
+        try {
+            await api.put(`/admin/users/${userId}/role`, { role: newRole });
+            loadUsers();
+        } catch (error) {
+            console.error('Error updating user role:', error);
+        }
+    };
+
+    // const handleToggleBlock = async (userId: string, isBlocked: boolean) => {
+    //     try {
+    //         await api.put(`/admin/users/${userId}/block`, { isBlocked });
+    //         loadUsers();
+    //     } catch (error) {
+    //         console.error('Error toggling user block:', error);
+    //     }
+    // };
+    const handleToggleBlock = async (userId: string, isCurrentlyBlocked: boolean) => {
+        try {
+            const reason = prompt('Enter reason for blocking (optional):') || undefined;
+
+            await api.put(`/admin/users/${userId}/block`, {
+                isBlocked: !isCurrentlyBlocked,
+                reason
+            });
+
+            loadUsers();
+        } catch (error) {
+            console.error('Error toggling user block:', error);
+        }
+    };
 
     return (
         <Container>
@@ -349,6 +403,16 @@ const AdminDashboard = () => {
             </TabPanel>
 
             <TabPanel value={tabValue} index={1}>
+                <TextField
+                    label="Search Users"
+                    variant="outlined"
+                    value={searchTerm}
+                    onChange={(e) => {
+                        console.log("Search term:", e.target.value);
+                        setSearchTerm(e.target.value)
+                    }}
+                    sx={{ mb: 2 }}
+                />
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
@@ -362,22 +426,35 @@ const AdminDashboard = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {users.map((user) => (
+                            {filteredUsers.map((user) => (  // This is the key change
                                 <TableRow key={user._id}>
                                     <TableCell>
-                                        <img
-                                            src={user.image}
-                                            alt={user.name}
-                                            style={{
-                                                maxWidth: '50px',
-                                                maxHeight: '50px',
-                                                objectFit: 'cover',
-                                            }}
-                                        />
+                                        {(() => {
+                                            const imageUrl = getUserImageUrl(user.image);
+                                            return imageUrl ? (
+                                                <img
+                                                    src={imageUrl}
+                                                    alt={user.name}
+                                                    style={{
+                                                        maxWidth: '50px',
+                                                        maxHeight: '50px',
+                                                        objectFit: 'cover',
+                                                    }}
+                                                />
+                                            ) : null;
+                                        })()}
                                     </TableCell>
                                     <TableCell>{user.name}</TableCell>
                                     <TableCell>{user.email}</TableCell>
-                                    <TableCell>{user.role}</TableCell>
+                                    <TableCell>
+                                        <Select
+                                            value={user.role}
+                                            onChange={(e) => handleRoleChange(user._id, e.target.value)}
+                                        >
+                                            <MenuItem value="user">User</MenuItem>
+                                            <MenuItem value="admin">Admin</MenuItem>
+                                        </Select>
+                                    </TableCell>
                                     <TableCell>
                                         <Button
                                             size='medium'
@@ -389,6 +466,19 @@ const AdminDashboard = () => {
                                         </Button>
                                     </TableCell>
                                     <TableCell>
+                                        <Button
+                                            variant="contained"
+                                            color={user.isBlocked ? "success" : "error"}
+                                            sx={{ mr: 1 }}
+                                            onClick={() => handleToggleBlock(user._id, user.isBlocked)}
+                                        >
+                                            {user.isBlocked ? "Unblock" : "Block"}
+                                        </Button>
+                                        {user.isBlocked && (
+                                            <Typography variant="caption" display="block">
+                                                Reason: {user.blockReason || 'Not specified'}
+                                            </Typography>
+                                        )}
                                         <Button
                                             size="small"
                                             color="error"

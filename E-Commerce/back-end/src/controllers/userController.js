@@ -104,6 +104,13 @@ export const userLogin = async (req, res) => {
             return res.status(404).json({ errors });
         }
 
+        if (user.isBlocked) {
+            return res.status(403).json({
+                message: `Your account is blocked. Reason: ${user.blockReason || 'Not specified'}`,
+                blockedAt: user.blockedAt
+            });
+        }
+
         if (user.role !== "user") {
             errors.role = "You are not an user";
             return res.status(403).json({ errors });
@@ -170,8 +177,12 @@ export const updateUserDetails = async (req, res) => {
         if (password) {
             updateData.password = await bcrypt.hash(password, 10);
         }
+        // Handle image update - replace existing images with new ones
         if (userImageUrls.length > 0) {
             updateData.image = userImageUrls;
+        }else if (req.body.removeImage) {
+            // If client explicitly wants to remove image
+            updateData.image = [];
         }
 
         const updateUser = await User.findByIdAndUpdate(userId, updateData, { new: true });

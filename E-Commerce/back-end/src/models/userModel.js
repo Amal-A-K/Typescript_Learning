@@ -28,6 +28,16 @@ const userSchema = new Schema({
         of: Number,
         default: {}
     },
+    isBlocked: {
+        type: Boolean,
+        default: false,
+    },
+    blockedAt: {
+        type: Date
+    },
+    blockReason: {
+        type: String
+    },
     resetPasswordToken: {
         type: String
     },

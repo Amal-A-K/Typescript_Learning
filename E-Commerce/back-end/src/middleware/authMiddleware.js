@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-
+import User from '../models/userModel.js';
+// token authentication
 export const authenticateToken = (req,res,next) => {    
     const authHeader = req.headers['authorization'];
     if(!authHeader || !authHeader.startsWith('Bearer ')){
@@ -16,11 +17,28 @@ export const authenticateToken = (req,res,next) => {
         return res.status(403).json({ message: "Invalid or expired token" });
     }
 };
-
+// checking is admin or not
 export const isadmin = (req,res,next) => {
     if(req.user && req.user.role === "admin"){
         next();
     }else{
         return res.status(403).json({ message: "You are not authorized to access this resource" });
     }
-}
+};
+
+// checking blocked user or not
+export const checkUserBlocked = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (user && user.isBlocked) {
+            return res.status(403).json({
+                message: `Your account is blocked. Reason: ${user.blockReason || 'Not specified'}`,
+                blockedAt: user.blockedAt
+            });
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
